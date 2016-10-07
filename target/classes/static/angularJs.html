@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en-US" ng-app="myApp">
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+<!-- Optional theme -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<body>
+
+<div ng-controller="myCtrl">
+    <p>Name : <input type="text" ng-model="name"></p>
+    <h1>Hello {{name}}</h1>
+
+    <p>My first expression: {{5 + 5}}</p>
+
+    First Name: <input type="text" ng-model="firstName"><br>
+    Last Name: <input type="text" ng-model="lastName"><br>
+    <br>
+    Full Name: {{firstName + " " + lastName}}
+
+    <input style="background-color:{{myCol}}" ng-model="myCol" value="{{myCol}}">
+</div>
+
+<div ng-controller="Hello">
+    <p>The ID is {{greeting.id}}</p>
+    <p>The content is {{greeting.content}}</p>
+</div>
+
+<div ng-controller="students" class="container">
+    <b>Students Section</b>
+    <table>
+    <td>
+        <table class="table table-striped">
+            <tr ng-repeat="x in students">
+                <td>{{ x.id }}</td>
+                <td>{{ x.name }}</td>
+                <td>{{ x.course }}</td>
+                <td>
+                    <ul class="example-animate-container">
+                        <li class="animated-repeat" ng-repeat="(key, value) in x.extraInfo">
+                            [{{$index + 1}}] {{key}} : {{value}}
+                        </li>
+                    </ul>
+
+                </td>
+            </tr>
+        </table>
+    </td>
+    <td valign="top">
+        <form ng-submit="studentsAdd()">
+            <input type="text" ng-model="studentId" size="10" placeholder="Student Id"><br>
+            <input type="text" ng-model="studentName" size="50" placeholder="Student Name"><br>
+            <input type="text" ng-model="studentCourse" size="50" placeholder="Student Course"><br>
+            <input type="text" ng-model="extraInfo" size="50" placeholder="{}"><br>
+            <input type="submit" value="Add New Student">
+        </form>
+    </td>
+    </table>
+</div>
+
+<script>
+    var app = angular.module('myApp', []);
+    app.config(function($httpProvider) {
+
+        $httpProvider.defaults.headers.common['Access-Control-Allow-Origin'] = '*';
+
+    });
+    app.controller('myCtrl', function($scope) {
+        $scope.firstName = "John";
+        $scope.lastName = "Doe";
+    });
+    app.controller('Hello', function($scope, $http) {
+        $http.get('http://rest-service.guides.spring.io/greeting').then(function(response) {
+            $scope.greeting = response.data;
+        });
+    });
+    app.controller('students', function($scope, $http, $log) {
+        $http.get('http://dt-jroh:8080/students').then(function(response) {
+            $scope.students = response.data;
+        });
+
+        $scope.studentsAdd = function() {
+            $scope.students.push(
+                {"id":$scope.studentId,
+                "name":$scope.studentName,
+                "course":$scope.studentCourse,
+                "extraInfo":JSON.parse($scope.extraInfo)});
+        };
+
+    });
+</script>
+
+</body>
+</html>
